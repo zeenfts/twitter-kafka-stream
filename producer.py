@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import time
 import logging
 import json
 import twint
@@ -18,11 +19,11 @@ def delivery_callback(err, msg) -> None:
         logger.info(message)
         print(message)
 
-def retrieve_tweet(topic: str) -> None:
+def retrieve_tweet(topic: str, limit_search: int) -> None:
     # Configure Intelligent Tool
     ct = twint.Config()
     ct.Search = topic
-    ct.Limit = 1000
+    ct.Limit = limit_search
 
     # Run
     twint.run.Search(ct)
@@ -32,7 +33,7 @@ def retrieve_tweet(topic: str) -> None:
     for tweet in tweets_as_objects:
         msg = json.dumps(tweet)
         prd.poll(1)
-        prd.produce(topic, msg.encode('utf-8'), callback=delivery_callback)
+        prd.produce('twitter_streaming', msg.encode('utf-8'), callback=delivery_callback)
         prd.flush()
         time.sleep(3)
 
@@ -54,6 +55,8 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='> Kafka Streaming Twitter Custom Search Topic <')
     parser.add_argument('topic_search_term', type=str, metavar='Twitter Search',
     help='Type what you want to search for the Tweet', default='Musk')
+    parser.add_argument('-L', '--limit_search', type=int, metavar='Tweet Get Limit Number',
+    help='Twitter get Tweet limit', default=1000)
     args = parser.parse_args()
 
-    retrieve_tweet(args.topic_search_term)
+    retrieve_tweet(args.topic_search_term, args.limit_search)

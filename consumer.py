@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from confluent_kafka import Consumer, OFFSET_BEGINNING
 
 def reset_offset(csm, partitions) -> None:
-     if args.reset:
+    if args.reset:
         for p in partitions:
             p.offset = OFFSET_BEGINNING
         csm.assign(partitions)
@@ -22,15 +22,12 @@ if __name__ == '__main__':
 
     # Parse the command line.
     parser = ArgumentParser(description='> Kafka Consumer Twitter <')
-    parser.add_argument('topic_to_subscribe', type=str, metavar='Tweet',
-    help='Choose one of the topic above!', default='Musk')
     parser.add_argument('--reset', action='store_true')
     args = parser.parse_args()
 
     # Subscribe to topic
-    topic = args.topic_to_subscribe
     print('Available topics to consume: ', csm.list_topics().topics)
-    csm.subscribe([topic], on_assign=reset_offset)
+    csm.subscribe(['twitter_streaming'], on_assign=reset_offset)
 
     # Poll for new messages from Kafka and print them.
     try:

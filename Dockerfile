@@ -12,4 +12,4 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN python producer.py "Maroko"
-RUN python consumer.py "Maroko"
+RUN python consumer.py
