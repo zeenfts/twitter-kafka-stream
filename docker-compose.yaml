@@ -74,7 +74,7 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-  custom:
+  main-app-start:
     build:
       context: .
       dockerfile: ./Dockerfile
