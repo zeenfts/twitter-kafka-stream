@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser(description='> Kafka Streaming Twitter Custom Search Topic <')
     parser.add_argument('topic_search_term', type=str, metavar='Twitter Search',
-    help='Type what you want to search for the Tweet', default='')
+    help='Type what you want to search for the Tweet', default='Musk')
     args = parser.parse_args()
 
     retrieve_tweet(args.topic_search_term)

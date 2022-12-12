@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # Parse the command line.
     parser = ArgumentParser(description='> Kafka Consumer Twitter <')
     parser.add_argument('topic_to_subscribe', type=str, metavar='Tweet',
-    help='Choose one of the topic above!', default='')
+    help='Choose one of the topic above!', default='Musk')
     parser.add_argument('--reset', action='store_true')
     args = parser.parse_args()
 

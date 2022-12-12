@@ -78,3 +78,5 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    # volumes:
+    #   - ../consumer.py:/usr/ # Consumer File

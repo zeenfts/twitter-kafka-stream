@@ -6,8 +6,10 @@ ENV KAFKA_HOME=/usr/twitter_kafka_stream
 RUN python -m pip install --upgrade pip setuptools wheel --no-cache-dir
 
 WORKDIR $KAFKA_HOME
+# VOLUME /usr
 
 COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT ["python", "producer.py"]
+RUN python producer.py "Maroko"
+RUN python consumer.py "Maroko"
