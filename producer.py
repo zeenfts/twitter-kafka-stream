@@ -1,27 +1,10 @@
 #!/usr/bin/env python
-
 import sys
 import logging
 import json
 import twint
 from argparse import ArgumentParser
 from confluent_kafka import Producer
-
-topic_search_term = ""
-
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%Y/%m/%d %H:%M:%S',
-                    filename='producer.log',
-                    filemode='w')
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-####################
- # Create Producer instance
-prd = Producer({'bootstrap.servers':'localhost:9092'})
-print('Kafka Producer has been initiated...')
-####################
 
 # Optional per-message delivery callback (triggered by poll() or flush())
 # when a message has been successfully delivered or permanently
@@ -54,6 +37,20 @@ def retrieve_tweet(topic: str) -> None:
         time.sleep(3)
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(asctime)s %(message)s',
+                        datefmt='%Y/%m/%d %H:%M:%S',
+                        filename='producer.log',
+                        filemode='w')
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    ####################
+    # Create Producer instance
+    prd = Producer({'bootstrap.servers':'localhost:9092'})
+    print('Kafka Producer has been initiated...')
+    ####################
+
     parser = ArgumentParser(description='> Kafka Streaming Twitter Custom Search Topic <')
     parser.add_argument('topic_search_term', type=str, metavar='Twitter Search',
     help='Type what you want to search for the Tweet', default='')
