@@ -10,4 +10,4 @@ WORKDIR $KAFKA_HOME
 COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT ["producer.py"]
+ENTRYPOINT ["python", "producer.py"]

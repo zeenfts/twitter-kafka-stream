@@ -2,7 +2,8 @@
 
 import sys
 import logging
-from random import choice
+import json
+import twint
 from argparse import ArgumentParser
 from confluent_kafka import Producer
 
@@ -34,18 +35,21 @@ def delivery_callback(err, msg) -> None:
         logger.info(message)
         print(message)
 
-def retrieve_tweet():
-    for _ in range(50):
-        data={
-           'user_id': fake.random_int(min=20000, max=100000),
-           'user_name':fake.name(),
-           'user_address':fake.street_address() + ' | ' + fake.city() + ' | ' + fake.country_code(),
-           'platform': random.choice(['Mobile', 'Laptop', 'Tablet']),
-           'signup_at': str(fake.date_time_this_month())    
-           }
-        msg = json.dumps(data)
+def retrieve_tweet(topic: str) -> None:
+    # Configure Intelligent Tool
+    ct = twint.Config()
+    ct.Search = topic
+    ct.Limit = 1000
+
+    # Run
+    twint.run.Search(ct)
+
+    tweets_as_objects = twint.output.tweets_object 
+
+    for tweet in tweets_as_objects:
+        msg = json.dumps(tweet)
         prd.poll(1)
-        prd.produce('user-tracker', msg.encode('utf-8'), callback=delivery_callback)
+        prd.produce(topic, msg.encode('utf-8'), callback=delivery_callback)
         prd.flush()
         time.sleep(3)
 
@@ -55,4 +59,4 @@ if __name__ == '__main__':
     help='Type what you want to search for the Tweet', default='')
     args = parser.parse_args()
 
-    retrieve_tweet()
+    retrieve_tweet(args.topic_search_term)
