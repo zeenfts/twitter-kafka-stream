@@ -4,6 +4,8 @@ import time
 import logging
 import json
 import twint
+import nest_asyncio
+from datetime import datetime
 from argparse import ArgumentParser
 from confluent_kafka import Producer
 
@@ -15,23 +17,41 @@ def delivery_callback(err, msg) -> None:
         print(f'ERROR: Message failed delivery: {err}')
     else:
         message = '{} Produced message on topic {} with value of {}\n'.format(
-            msg.key().decode('utf-8'),msg.topic(), msg.value().decode('utf-8'))
+            msg.key(),msg.topic(), msg.value())
         logger.info(message)
         print(message)
 
 def retrieve_tweet(topic: str, limit_search: int) -> None:
+    # tweets_as_objects = []
+    nest_asyncio.apply()
     # Configure Intelligent Tool
     ct = twint.Config()
     ct.Search = topic
+    ct.Lang = "en"
+    ct.Since = '2022-01-01'
     ct.Limit = limit_search
+    ct.Hide_output = True
+    ct.Store_object = True
+    ct.Store_json = True
+    ct.Output = f"data/search-{topic}-tweets.json"
+    # ct.Store_object_tweets_list = tweets_as_objects
 
     # Run
     twint.run.Search(ct)
 
-    tweets_as_objects = twint.output.tweets_object 
+    tweets_as_objects = twint.output.tweets_list
 
     for tweet in tweets_as_objects:
-        msg = json.dumps(tweet)
+        get_tweet={
+                'id': tweet.id,
+                'conversation_id': tweet.conversation_id,
+                'datetime': str(tweet.datestamp) + ' ' + str(tweet.timestamp) + ' ' + str(tweet.timezone),
+                'user_id':tweet.user_id,
+                'tweet':tweet.tweet
+                
+            }
+        msg = json.dumps(get_tweet)
+        print(msg)
         prd.poll(1)
         prd.produce('twitter_streaming', msg.encode('utf-8'), callback=delivery_callback)
         prd.flush()
@@ -40,7 +60,7 @@ def retrieve_tweet(topic: str, limit_search: int) -> None:
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(message)s',
                         datefmt='%Y/%m/%d %H:%M:%S',
-                        filename='producer.log',
+                        filename=f'data/{datetime.now().strftime("%Y-%m-%d_%H.%M.%S"}-producer.log',
                         filemode='w')
 
     logger = logging.getLogger()
@@ -53,7 +73,7 @@ if __name__ == '__main__':
     ####################
 
     parser = ArgumentParser(description='> Kafka Streaming Twitter Custom Search Topic <')
-    parser.add_argument('topic_search_term', type=str, metavar='Twitter Search',
+    parser.add_argument('-S', '--topic_search_term', type=str, metavar='Twitter Search',
     help='Type what you want to search for the Tweet', default='Musk')
     parser.add_argument('-L', '--limit_search', type=int, metavar='Tweet Get Limit Number',
     help='Twitter get Tweet limit', default=1000)

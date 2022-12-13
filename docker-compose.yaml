@@ -74,9 +74,26 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-  main-app-start:
+  app-producer:
+    # image: python:3.8.16-slim-bullseye
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./docker/Dockerfile
+    # stdin_open: true
+    # tty: true
+    container_name: producer-app
+    volumes:
+      - ./app/producer.py:/usr/producer/producer.py
+    # entrypoint: python ./usr/producer/producer.py
+
+  app-consumer:
+    # image: python:3.8.16-slim-bullseye
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.consumer
+    # stdin_open: true
+    # tty: true
+    container_name: consumer-app
     # volumes:
-    #   - ../consumer.py:/usr/ # Consumer File
+    #   - ./app/consumer.py :/usr/consumer/consumer.py
+    # entrypoint: python ./usr/consumer/consumer.py

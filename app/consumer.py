@@ -9,6 +9,9 @@ def reset_offset(csm, partitions) -> None:
             p.offset = OFFSET_BEGINNING
         csm.assign(partitions)
 
+def temp_funvc():
+    pass
+
 if __name__ == '__main__':
     # Create Consumer instance
     ################
@@ -19,6 +22,7 @@ if __name__ == '__main__':
         })
     print('Kafka Consumer has been initiated...')
     ################
+    temp_funvc()
 
     # Parse the command line.
     parser = ArgumentParser(description='> Kafka Consumer Twitter <')
@@ -38,8 +42,8 @@ if __name__ == '__main__':
             elif msg.error():
                 print("ERROR: %s".format(msg.error()))
             else:
-                print("Consumed event from topic {topic}: key = {key:12} value = {value:12}".format(
-                    topic=msg.topic(), key=msg.key().decode('utf-8'), value=msg.value().decode('utf-8')))
+                print("Consumed event from topic {topic}: key = {key:12} value = {value}".format(
+                    topic=str(msg.topic()), key=str(msg.key()), value=str(msg.value())))
     except KeyboardInterrupt:
         pass
     finally:
