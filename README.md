@@ -1,5 +1,5 @@
 # twitter-kafka-stream
-Consume Tweet "Kaesang" using Kafka Basic Component from Twitter API.
+Consume Tweet with Keyword "Kaesang" using Kafka Basic Component from Twitter API.
 
 Info:
 1. `docker compose up` and see the log on terminal.
