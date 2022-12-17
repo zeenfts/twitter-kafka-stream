@@ -4,7 +4,7 @@ import time
 import logging
 import json
 import twint
-import nest_asyncio
+# import nest_asyncio
 from datetime import datetime
 from argparse import ArgumentParser
 from confluent_kafka import Producer
@@ -23,7 +23,7 @@ def delivery_callback(err, msg) -> None:
 
 def retrieve_tweet(topic: str, limit_search: int) -> None:
     # tweets_as_objects = []
-    nest_asyncio.apply()
+    # nest_asyncio.apply()
     # Configure Intelligent Tool
     ct = twint.Config()
     ct.Search = topic
@@ -32,8 +32,8 @@ def retrieve_tweet(topic: str, limit_search: int) -> None:
     ct.Limit = limit_search
     ct.Hide_output = True
     ct.Store_object = True
-    ct.Store_json = True
-    ct.Output = f"data/search-{topic}-tweets.json"
+    # ct.Store_json = True
+    # ct.Output = f"data/search-{topic}-tweets.json"
     # ct.Store_object_tweets_list = tweets_as_objects
 
     # Run
@@ -60,17 +60,17 @@ def retrieve_tweet(topic: str, limit_search: int) -> None:
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(message)s',
                         datefmt='%Y/%m/%d %H:%M:%S',
-                        filename=f'data/{datetime.now().strftime("%Y-%m-%d_%H.%M.%S"}-producer.log',
+                        filename=f'./logs/{datetime.now().strftime("%Y%m%d%H%M%S")}-producer.log',
                         filemode='w')
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    ####################
-    # Create Producer instance
-    prd = Producer({'bootstrap.servers':'localhost:9092'})
+    #####################################################
+    ########### Create Producer instance ################
+    prd = Producer({'bootstrap.servers':'broker:29092'})
     print('Kafka Producer has been initiated...')
-    ####################
+    #####################################################
 
     parser = ArgumentParser(description='> Kafka Streaming Twitter Custom Search Topic <')
     parser.add_argument('-S', '--topic_search_term', type=str, metavar='Twitter Search',

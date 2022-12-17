@@ -1,2 +1,2 @@
 confluent-kafka
-git+https://github.com/twintproject/twint.git#egg=twint
+pip install --upgrade git+https://github.com/twintproject/twint.git@origin/master#egg=twint

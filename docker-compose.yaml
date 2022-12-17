@@ -1,6 +1,46 @@
 ---
 version: '3'
 services:
+  app-producer:
+    image: python:3.8.16-slim-bullseye
+    container_name: producer-app
+    working_dir: /usr/producer
+    volumes:
+      - ./app/producer.py:/usr/producer/producer.py
+      - ./logs/:/usr/producer/logs/:rw
+    command: 
+      - bash
+      - -c
+      - |
+        echo "Install Dependencies"
+        apt-get -yqq update && apt-get -yqq install git
+        python -m pip install --upgrade pip setuptools wheel --no-cache-dir
+        pip install confluent_kafka
+        pip install --upgrade git+https://github.com/twintproject/twint.git@origin/master#egg=twint
+        echo " "
+        echo "#########################################################################"
+        echo "Producer App Twitter Post"
+        echo "#########################################################################"
+        python ./producer.py -S "Kaesang" -L 350
+
+  app-consumer:
+    image: python:3.8.16-slim-bullseye
+    container_name: consumer-app
+    working_dir: /usr/consumer
+    volumes:
+      - ./app/consumer.py:/usr/consumer/consumer.py
+    command: 
+      - bash
+      - -c
+      - |
+        echo "Install Dependencies"
+        python -m pip install --upgrade pip setuptools wheel --no-cache-dir && pip install confluent_kafka
+        echo " "
+        echo "#########################################################################"
+        echo "Consumer App Twitter Get"
+        echo "#########################################################################"
+        python ./consumer.py
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
     hostname: zookeeper
@@ -73,27 +113,3 @@ services:
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
-
-  app-producer:
-    # image: python:3.8.16-slim-bullseye
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile
-    # stdin_open: true
-    # tty: true
-    container_name: producer-app
-    volumes:
-      - ./app/producer.py:/usr/producer/producer.py
-    # entrypoint: python ./usr/producer/producer.py
-
-  app-consumer:
-    # image: python:3.8.16-slim-bullseye
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.consumer
-    # stdin_open: true
-    # tty: true
-    container_name: consumer-app
-    # volumes:
-    #   - ./app/consumer.py :/usr/consumer/consumer.py
-    # entrypoint: python ./usr/consumer/consumer.py

@@ -13,15 +13,16 @@ def temp_funvc():
     pass
 
 if __name__ == '__main__':
-    # Create Consumer instance
-    ################
+    ##############################################
+    ######## Create Consumer instance ############
+    ##############################################
     csm = Consumer({
-        'bootstrap.servers':'localhost:9092',
+        'bootstrap.servers':'broker:29092',
         'group.id':'tweet-python-consumer',
         'auto.offset.reset':'earliest'
         })
     print('Kafka Consumer has been initiated...')
-    ################
+    ##############################################
     temp_funvc()
 
     # Parse the command line.
